@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Komputer MTs Ribatul Muta'allimin</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Poppins', sans-serif; }
+        .glass { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        .glass-dark { background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .sidebar-link.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .bg-image { background-size: cover; background-position: center; background-attachment: fixed; }
+        .schedule-cell { min-height: 60px; }
+        .schedule-cell.booked { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .schedule-cell.available { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); cursor: pointer; }
+        .schedule-cell.available:hover { transform: scale(1.02); }
+        .modal { display: none; position: fixed; inset: 0; z-index: 1000; }
+        .modal.show { display: flex; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #667eea; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Main Container -->
+    <div id="app">
+        <!-- Background Image Container -->
+        <div id="bgContainer" class="fixed inset-0 bg-image -z-10" style="background-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1920'); filter: brightness(0.4);"></div>
+
+        <!-- Navigation -->
+        <nav class="glass-dark fixed w-full z-50 px-6 py-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-full gradient-bg flex items-center justify-center animate-float">
+                        <i class="fas fa-desktop text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-lg">Lab Komputer</h1>
+                        <p class="text-gray-300 text-xs">MTs Ribatul Muta'allimin</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-2">
+                    <button onclick="showPage('dashboard')" class="nav-btn px-4 py-2 text-white hover:bg-white/20 rounded-lg transition" data-page="dashboard">
+                        <i class="fas fa-home mr-2"></i>Dashboard
+                    </button>
+                    <button onclick="showPage('profil')" class="nav-btn px-4 py-2 text-white hover:bg-white/20 rounded-lg transition" data-page="profil">
+                        <i class="fas fa-info-circle mr-2"></i>Profil
+                    </button>
+                    <button onclick="showPage('pengumuman')" class="nav-btn px-4 py-2 text-white hover:bg-white/20 rounded-lg transition" data-page="pengumuman">
+                        <i class="fas fa-bullhorn mr-2"></i>Pengumuman
+                    </button>
+                    <button onclick="showPage('jadwal')" class="nav-btn px-4 py-2 text-white hover:bg-white/20 rounded-lg transition" data-page="jadwal">
+                        <i class="fas fa-calendar-alt mr-2"></i>Jadwal
+                    </button>
+                    <button onclick="showPage('galeri')" class="nav-btn px-4 py-2 text-white hover:bg-white/20 rounded-lg transition" data-page="galeri">
+                        <i class="fas fa-images mr-2"></i>Galeri
+                    </button>
+                    <button onclick="showPage('saran')" class="nav-btn px-4 py-2 text-white hover:bg-white/20 rounded-lg transition" data-page="saran">
+                        <i class="fas fa-comment-alt mr-2"></i>Saran
+                    </button>
+                    <button onclick="showPage('kontak')" class="nav-btn px-4 py-2 text-white hover:bg-white/20 rounded-lg transition" data-page="kontak">
+                        <i class="fas fa-phone mr-2"></i>Kontak
+                    </button>
+                </div>
+                <button onclick="showAdminLogin()" class="glass px-4 py-2 text-white rounded-lg hover:bg-white/30 transition">
+                    <i class="fas fa-user-shield mr-2"></i>Admin
+                </button>
+            </div>
+            <!-- Mobile Menu -->
+            <div class="md:hidden mt-4 flex flex-wrap gap-2">
+                <button onclick="showPage('dashboard')" class="nav-btn px-3 py-1 text-white text-sm hover:bg-white/20 rounded-lg">Dashboard</button>
+                <button onclick="showPage('profil')" class="nav-btn px-3 py-1 text-white text-sm hover:bg-white/20 rounded-lg">Profil</button>
+                <button onclick="showPage('pengumuman')" class="nav-btn px-3 py-1 text-white text-sm hover:bg-white/20 rounded-lg">Info</button>
+                <button onclick="showPage('jadwal')" class="nav-btn px-3 py-1 text-white text-sm hover:bg-white/20 rounded-lg">Jadwal</button>
+                <button onclick="showPage('galeri')" class="nav-btn px-3 py-1 text-white text-sm hover:bg-white/20 rounded-lg">Galeri</button>
+                <button onclick="showPage('saran')" class="nav-btn px-3 py-1 text-white text-sm hover:bg-white/20 rounded-lg">Saran</button>
+                <button onclick="showPage('kontak')" class="nav-btn px-3 py-1 text-white text-sm hover:bg-white/20 rounded-lg">Kontak</button>
+            </div>
+        </nav>
+
+        <!-- Pages Container -->
+        <div class="pt-32 pb-10 px-4">
+            <!-- Dashboard Page -->
+            <div id="page-dashboard" class="page max-w-7xl mx-auto">
+                <div class="text-center mb-10">
+                    <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 animate-float">
+                        <i class="fas fa-laptop-code mr-3"></i>Selamat Datang
+                    </h1>
+                    <p class="text-xl text-gray-200">Laboratorium Komputer MTs Ribatul Muta'allimin</p>
+                </div>
+
+                <!-- Dashboard Image Slider -->
+                <div id="dashboardSlider" class="glass rounded-2xl p-4 mb-8 overflow-hidden">
+                    <div class="relative h-64 md:h-96 rounded-xl overflow-hidden">
+                        <div id="sliderImages" class="flex transition-transform duration-500">
+                            <!-- Images will be loaded here -->
+                        </div>
+                        <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 p-3 rounded-full">
+                            <i class="fas fa-chevron-left text-white"></i>
+                        </button>
+                        <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/30 hover:bg-white/50 p-3 rounded-full">
+                            <i class="fas fa-chevron-right text-white"></i>
+                        </button>
+                        <div id="sliderDots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2"></div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid md:grid-cols-4 gap-6 mb-8">
+                    <div class="glass rounded-2xl p-6 text-center card-hover">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500 flex items-center justify-center">
+                            <i class="fas fa-desktop text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white" id="totalKomputer">70</h3>
+                        <p class="text-gray-300">Total Komputer</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 text-center card-hover">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500 flex items-center justify-center">
+                            <i class="fas fa-building text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white">2</h3>
+                        <p class="text-gray-300">Ruang Lab</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 text-center card-hover">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-500 flex items-center justify-center">
+                            <i class="fas fa-calendar-check text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white" id="totalBooking">0</h3>
+                        <p class="text-gray-300">Booking Minggu Ini</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 text-center card-hover">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-pink-500 flex items-center justify-center">
+                            <i class="fas fa-users text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white" id="totalPengguna">0</h3>
+                        <p class="text-gray-300">Pengguna Aktif</p>
+                    </div>
+                </div>
+
+                <!-- Lab Info Cards -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="glass rounded-2xl p-6 card-hover">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mr-4">
+                                <i class="fas fa-compass text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Lab Komputer Utara</h3>
+                                <p class="text-gray-300" id="labUtaraInfo">30 Unit Komputer</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300">Laboratorium dengan fasilitas lengkap untuk pembelajaran TIK dan praktikum.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 card-hover">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mr-4">
+                                <i class="fas fa-compass text-white" style="transform: rotate(180deg);"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Lab Komputer Selatan</h3>
+                                <p class="text-gray-300" id="labSelatanInfo">40 Unit Komputer</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300">Laboratorium multimedia dengan peralatan modern untuk kegiatan praktikum.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profil Page -->
+            <div id="page-profil" class="page max-w-4xl mx-auto hidden">
+                <div class="glass rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold text-white mb-6 text-center">
+                        <i class="fas fa-info-circle mr-3"></i>Profil Laboratorium
+                    </h2>
+                    <div id="profilContent" class="text-gray-200 space-y-4">
+                        <p>Laboratorium Komputer MTs Ribatul Muta'allimin merupakan fasilitas pembelajaran teknologi informasi dan komunikasi yang modern dan lengkap.</p>
+                        <p><strong>Visi:</strong> Menjadi laboratorium komputer terbaik yang mendukung pembelajaran berbasis teknologi.</p>
+                        <p><strong>Misi:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Menyediakan fasilitas komputer yang memadai</li>
+                            <li>Mendukung proses pembelajaran TIK</li>
+                            <li>Mengembangkan kemampuan digital siswa</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pengumuman Page -->
+            <div id="page-pengumuman" class="page max-w-4xl mx-auto hidden">
+                <div class="glass rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold text-white mb-6 text-center">
+                        <i class="fas fa-bullhorn mr-3"></i>Pengumuman & Informasi
+                    </h2>
+                    <div id="pengumumanList" class="space-y-4">
+                        <!-- Will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jadwal Page -->
+            <div id="page-jadwal" class="page max-w-6xl mx-auto hidden">
+                <div class="glass rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold text-white mb-6 text-center">
+                        <i class="fas fa-calendar-alt mr-3"></i>Jadwal Penggunaan Lab
+                    </h2>
+                    
+                    <!-- Lab Selection -->
+                    <div class="flex justify-center gap-4 mb-6">
+                        <button onclick="selectLab('utara')" id="btnLabUtara" class="px-6 py-3 rounded-xl gradient-bg text-white font-semibold transition">
+                            <i class="fas fa-compass mr-2"></i>Lab Utara
+                        </button>
+                        <button onclick="selectLab('selatan')" id="btnLabSelatan" class="px-6 py-3 rounded-xl bg-white/20 text-white font-semibold transition hover:bg-white/30">
+                            <i class="fas fa-compass mr-2" style="transform: rotate(180deg);"></i>Lab Selatan
+                        </button>
+                    </div>
+
+                    <!-- Week Navigation -->
+                    <div class="flex justify-center items-center gap-4 mb-6">
+                        <button onclick="changeWeek(-1)" class="p-2 rounded-lg bg-white/20 text-white hover:bg-white/30">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="weekLabel" class="text-white font-semibold text-lg"></span>
+                        <button onclick="changeWeek(1)" class="p-2 rounded-lg bg-white/20 text-white hover:bg-white/30">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="flex justify-center gap-6 mb-6">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded bg-gradient-to-r from-blue-400 to-cyan-400 mr-2"></div>
+                            <span class="text-white">Tersedia</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded bg-gradient-to-r from-pink-400 to-red-400 mr-2"></div>
+                            <span class="text-white">Sudah Dibooking</span>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-white">
+                            <thead>
+                                <tr class="bg-white/20">
+                                    <th class="p-3 rounded-tl-lg">Jam</th>
+                                    <th class="p-3">Sabtu</th>
+                                    <th class="p-3">Ahad</th>
+                                    <th class="p-3">Senin</th>
+                                    <th class="p-3">Selasa</th>
+                                    <th class="p-3">Rabu</th>
+                                    <th class="p-3 rounded-tr-lg">Kamis</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleTable">
+                                <!-- Will be generated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Galeri Page -->
+            <div id="page-galeri" class="page max-w-6xl mx-auto hidden">
+                <div class="glass rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold text-white mb-6 text-center">
+                        <i class="fas fa-images mr-3"></i>Galeri Kegiatan
+                    </h2>
+                    <div id="galeriGrid" class="grid md:grid-cols-3 gap-6">
+                        <!-- Will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saran Page -->
+            <div id="page-saran" class="page max-w-2xl mx-auto hidden">
+                <div class="glass rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold text-white mb-6 text-center">
+                        <i class="fas fa-comment-alt mr-3"></i>Saran & Masukan
+                    </h2>
+                    <form id="saranForm" class="space-y-4">
+                        <div>
+                            <label class="text-white block mb-2">Nama</label>
+                            <input type="text" id="saranNama" required class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-gray-300 border border-white/30 focus:outline-none focus:border-purple-400" placeholder="Masukkan nama Anda">
+                        </div>
+                        <div>
+                            <label class="text-white block mb-2">Email</label>
+                            <input type="email" id="saranEmail" required class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-gray-300 border border-white/30 focus:outline-none focus:border-purple-400" placeholder="Masukkan email Anda">
+                        </div>
+                        <div>
+                            <label class="text-white block mb-2">Saran/Masukan</label>
+                            <textarea id="saranIsi" rows="5" required class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-gray-300 border border-white/30 focus:outline-none focus:border-purple-400" placeholder="Tuliskan saran atau masukan Anda"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 rounded-xl gradient-bg text-white font-semibold hover:opacity-90 transition">
+                            <i class="fas fa-paper-plane mr-2"></i>Kirim Saran
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Kontak Page -->
+            <div id="page-kontak" class="page max-w-4xl mx-auto hidden">
+                <div class="glass rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold text-white mb-6 text-center">
+                        <i class="fas fa-phone mr-3"></i>Kontak
+                    </h2>
+                    <div id="kontakContent" class="grid md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 rounded-full gradient-bg flex items-center justify-center mr-4">
+                                    <i class="fas fa-map-marker-alt text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-semibold">Alamat</h4>
+                                    <p class="text-gray-300" id="kontakAlamat">MTs Ribatul Muta'allimin</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 rounded-full gradient-bg flex items-center justify-center mr-4">
+                                    <i class="fas fa-phone text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-semibold">Telepon</h4>
+                                    <p class="text-gray-300" id="kontakTelp">-</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 rounded-full gradient-bg flex items-center justify-center mr-4">
+                                    <i class="fas fa-envelope text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-semibold">Email</h4>
+                                    <p class="text-gray-300" id="kontakEmail">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-dark rounded-xl p-6">
+                            <h4 class="text-white font-semibold mb-4">Jam Operasional</h4>
+                            <div class="text-gray-300 space-y-2">
+                                <p><i class="fas fa-clock mr-2"></i>Sabtu - Kamis: 07:00 - 15:00</p>
+                                <p><i class="fas fa-calendar-times mr-2"></i>Jumat: Libur</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="glass-dark py-6 text-center text-white">
+            <p>&copy; 2024 Lab Komputer MTs Ribatul Muta'allimin. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal items-center justify-center bg-black/50">
+        <div class="glass rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold text-white mb-4">
+                <i class="fas fa-calendar-plus mr-2"></i>Booking Lab
+            </h3>
+            <p id="bookingInfo" class="text-gray-300 mb-4"></p>
+            <form id="bookingForm" class="space-y-4">
+                <div>
+                    <label class="text-white block mb-2">Nama Guru/Pengajar</label>
+                    <input type="text" id="bookingNama" required class="w-full p-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-white block mb-2">Kelas</label>
+                    <input type="text" id="bookingKelas" required class="w-full p-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none" placeholder="Contoh: VII A">
+                </div>
+                <div>
+                    <label class="text-white block mb-2">Mata Pelajaran</label>
+                    <input type="text" id="bookingMapel" required class="w-full p-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-white block mb-2">Keterangan</label>
+                    <textarea id="bookingKet" rows="2" class="w-full p-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none"></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button type="button" onclick="closeBookingModal()" class="flex-1 py-3 rounded-xl bg-gray-500 text-white font-semibold hover:bg-gray-600 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl gradient-bg text-white font-semibold hover:opacity-90 transition">Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Booking Modal -->
+    <div id="viewBookingModal" class="modal items-center justify-center bg-black/50">
+        <div class="glass rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold text-white mb-4">
+                <i class="fas fa-info-circle mr-2"></i>Detail Booking
+            </h3>
+            <div id="viewBookingContent" class="text-gray-200 space-y-2"></div>
+            <button onclick="closeViewBookingModal()" class="mt-6 w-full py-3 rounded-xl bg-gray-500 text-white font-semibold hover:bg-gray-600 transition">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="modal items-center justify-center bg-black/50">
+        <div class="glass rounded-2xl p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold text-white mb-4 text-center">
+                <i class="fas fa-user-shield mr-2"></i>Login Admin
+            </h3>
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label class="text-white block mb-2">Username</label>
+                    <input type="text" id="adminUsername" required class="w-full p-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-white block mb-2">Password</label>
+                    <input type="password" id="adminPassword" required class="w-full p-3 rounded-xl bg-white/20 text-white border border-white/30 focus:outline-none">
+                </div>
+                <div class="flex gap-4">
+                    <button type="button" onclick="closeAdminLogin()" class="flex-1 py-3 rounded-xl bg-gray-500 text-white font-semibold hover:bg-gray-600 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl gradient-bg text-white font-semibold hover:opacity-90 transition">Login</button>
+                </div>
+            </form>
+            <p class="text-gray-400 text-sm text-center mt-4">Default: admin / admin123</p>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="fixed inset-0 bg-gray-900 z-50 hidden overflow-auto">
+        <div class="flex min-h-screen">
+            <!-- Sidebar -->
+            <div class="w-64 bg-gray-800 p-6 fixed h-full overflow-auto">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
+                        <i class="fas fa-user-shield text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold">Admin Panel</h3>
+                        <p class="text-gray-400 text-xs">Lab Komputer</p>
+                    </div>
+                </div>
+                <nav class="space-y-2">
+                    <button onclick="showAdminPage('dashboard')" class="sidebar-link active w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-tachometer-alt mr-3 w-5"></i>Dashboard
+                    </button>
+                    <button onclick="showAdminPage('background')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-image mr-3 w-5"></i>Background
+                    </button>
+                    <button onclick="showAdminPage('slider')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-images mr-3 w-5"></i>Slider Dashboard
+                    </button>
+                    <button onclick="showAdminPage('profil')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-info-circle mr-3 w-5"></i>Profil
+                    </button>
+                    <button onclick="showAdminPage('pengumuman')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-bullhorn mr-3 w-5"></i>Pengumuman
+                    </button>
+                    <button onclick="showAdminPage('lab')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-desktop mr-3 w-5"></i>Pengaturan Lab
+                    </button>
+                    <button onclick="showAdminPage('booking')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-calendar-check mr-3 w-5"></i>Data Booking
+                    </button>
+                    <button onclick="showAdminPage('galeri')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-photo-video mr-3 w-5"></i>Galeri
+                    </button>
+                    <button onclick="showAdminPage('saran')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-comment-alt mr-3 w-5"></i>Saran Masuk
+                    </button>
+                    <button onclick="showAdminPage('kontak')" class="sidebar-link w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition flex items-center">
+                        <i class="fas fa-phone mr-3 w-5"></i>Kontak
+                    </button>
+                </nav>
+                <button onclick="logoutAdmin()" class="w-full mt-8 px-4 py-3 rounded-xl bg-red-500 text-white hover:bg-red-600 transition flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+
+            <!-- Admin Content -->
+            <div class="ml-64 flex-1 p-8">
+                <!-- Admin Dashboard -->
+                <div id="admin-dashboard" class="admin-page">
+                    <h2 class="text-3xl font-bold text-white mb-6">Dashboard Admin</h2>
+                    <div class="grid md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl p-6">
+                            <i class="fas fa-desktop text-white text-3xl mb-2"></i>
+                            <h3 class="text-2xl font-bold text-white" id="adminTotalKomputer">70</h3>
+                            <p class="text-blue-100">Total Komputer</p>
+                        </div>
+                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-6">
+                            <i class="fas fa-calendar-check text-white text-3xl mb-2"></i>
+                            <h3 class="text-2xl font-bold text-white" id="adminTotalBooking">0</h3>
+                            <p class="text-purple-100">Total Booking</p>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl p-6">
+                            <i class="fas fa-comment-alt text-white text-3xl mb-2"></i>
+                            <h3 class="text-2xl font-bold text-white" id="adminTotalSaran">0</h3>
+                            <p class="text-green-100">Saran Masuk</p>
+                        </div>
+                        <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6">
+                            <i class="fas fa-images text-white text-3xl mb-2"></i>
+                            <h3 class="text-2xl font-bold text-white" id="adminTotalGaleri">0</h3>
+                            <p class="text-orange-100">Foto Galeri</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Background -->
+                <div id="admin-background" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Pengaturan Background</h2>
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <div class="mb-4">
+                            <label class="text-white block mb-2">Upload Background Website</label>
+                            <input type="file" id="bgUpload" accept="image/*" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                        </div>
+                        <div id="bgPreview" class="mt-4 rounded-xl overflow-hidden max-h-64"></div>
+                        <button onclick="saveBackground()" class="mt-4 px-6 py-3 rounded-xl gradient-bg text-white font-semibold">Simpan Background</button>
+                    </div>
+                </div>
+
+                <!-- Admin Slider -->
+                <div id="admin-slider" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Slider Dashboard</h2>
+                    <div class="bg-gray-800 rounded-2xl p-6 mb-6">
+                        <div class="mb-4">
+                            <label class="text-white block mb-2">Upload Gambar Slider</label>
+                            <input type="file" id="sliderUpload" accept="image/*" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                        </div>
+                        <div>
+                            <label class="text-white block mb-2">Judul Gambar</label>
+                            <input type="text" id="sliderTitle" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600" placeholder="Judul gambar">
+                        </div>
+                        <button onclick="addSliderImage()" class="mt-4 px-6 py-3 rounded-xl gradient-bg text-white font-semibold">Tambah Gambar</button>
+                    </div>
+                    <div id="sliderList" class="grid md:grid-cols-3 gap-4"></div>
+                </div>
+
+                <!-- Admin Profil -->
+                <div id="admin-profil" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Edit Profil</h2>
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <div class="mb-4">
+                            <label class="text-white block mb-2">Konten Profil (HTML)</label>
+                            <textarea id="adminProfilContent" rows="10" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600 font-mono text-sm"></textarea>
+                        </div>
+                        <button onclick="saveProfil()" class="px-6 py-3 rounded-xl gradient-bg text-white font-semibold">Simpan Profil</button>
+                    </div>
+                </div>
+
+                <!-- Admin Pengumuman -->
+                <div id="admin-pengumuman" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Kelola Pengumuman</h2>
+                    <div class="bg-gray-800 rounded-2xl p-6 mb-6">
+                        <div class="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="text-white block mb-2">Judul</label>
+                                <input type="text" id="pengumumanJudul" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                            </div>
+                            <div>
+                                <label class="text-white block mb-2">Tanggal</label>
+                                <input type="date" id="pengumumanTanggal" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="text-white block mb-2">Isi Pengumuman</label>
+                            <textarea id="pengumumanIsi" rows="4" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600"></textarea>
+                        </div>
+                        <button onclick="addPengumuman()" class="px-6 py-3 rounded-xl gradient-bg text-white font-semibold">Tambah Pengumuman</button>
+                    </div>
+                    <div id="adminPengumumanList" class="space-y-4"></div>
+                </div>
+
+                <!-- Admin Lab Settings -->
+                <div id="admin-lab" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Pengaturan Lab</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-gray-800 rounded-2xl p-6">
+                            <h3 class="text-xl font-bold text-white mb-4"><i class="fas fa-compass mr-2"></i>Lab Komputer Utara</h3>
+                            <div>
+                                <label class="text-white block mb-2">Jumlah Komputer</label>
+                                <input type="number" id="labUtaraCount" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600" value="30">
+                            </div>
+                            <button onclick="saveLabUtara()" class="mt-4 px-6 py-3 rounded-xl gradient-bg text-white font-semibold">Simpan</button>
+                        </div>
+                        <div class="bg-gray-800 rounded-2xl p-6">
+                            <h3 class="text-xl font-bold text-white mb-4"><i class="fas fa-compass mr-2" style="transform: rotate(180deg);"></i>Lab Komputer Selatan</h3>
+                            <div>
+                                <label class="text-white block mb-2">Jumlah Komputer</label>
+                                <input type="number" id="labSelatanCount" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600" value="40">
+                            </div>
+                            <button onclick="saveLabSelatan()" class="mt-4 px-6 py-3 rounded-xl gradient-bg text-white font-semibold">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Booking -->
+                <div id="admin-booking" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Data Booking</h2>
+                    <div class="mb-4 flex gap-4">
+                        <button onclick="downloadBookingData()" class="px-6 py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-600">
+                            <i class="fas fa-download mr-2"></i>Download Data (CSV)
+                        </button>
+                    </div>
+                    <div class="bg-gray-800 rounded-2xl overflow-hidden">
+                        <table class="w-full text-white">
+                            <thead class="bg-gray-700">
+                                <tr>
+                                    <th class="p-4 text-left">Tanggal</th>
+                                    <th class="p-4 text-left">Lab</th>
+                                    <th class="p-4 text-left">Jam</th>
+                                    <th class="p-4 text-left">Nama</th>
+                                    <th class="p-4 text-left">Kelas</th>
+                                    <th class="p-4 text-left">Mapel</th>
+                                    <th class="p-4 text-left">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminBookingList"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Galeri -->
+                <div id="admin-galeri" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Kelola Galeri</h2>
+                    <div class="bg-gray-800 rounded-2xl p-6 mb-6">
+                        <div class="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="text-white block mb-2">Upload Foto</label>
+                                <input type="file" id="galeriUpload" accept="image/*" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                            </div>
+                            <div>
+                                <label class="text-white block mb-2">Judul Foto</label>
+                                <input type="text" id="galeriJudul" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-white block mb-2">Deskripsi</label>
+                            <input type="text" id="galeriDesc" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                        </div>
+                        <button onclick="addGaleri()" class="mt-4 px-6 py-3 rounded-xl gradient-bg text-white font-semibold">Tambah Foto</button>
+                    </div>
+                    <div id="adminGaleriList" class="grid md:grid-cols-4 gap-4"></div>
+                </div>
+
+                <!-- Admin Saran -->
+                <div id="admin-saran" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Saran Masuk</h2>
+                    <div id="adminSaranList" class="space-y-4"></div>
+                </div>
+
+                <!-- Admin Kontak -->
+                <div id="admin-kontak" class="admin-page hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Edit Kontak</h2>
+                    <div class="bg-gray-800 rounded-2xl p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-white block mb-2">Alamat</label>
+                                <input type="text" id="kontakAlamatInput" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                            </div>
+                            <div>
+                                <label class="text-white block mb-2">Telepon</label>
+                                <input type="text" id="kontakTelpInput" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                            </div>
+                            <div>
+                                <label class="text-white block mb-2">Email</label>
+                                <input type="email" id="kontakEmailInput" class="w-full p-3 rounded-xl bg-gray-700 text-white border border-gray-600">
+                            </div>
+                        </div>
+                        <button onclick="saveKontak()" class="mt-4 px-6 py-3 rounded-xl gradient-bg text-white font-semibold">Simpan Kontak</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image View Modal -->
+    <div id="imageViewModal" class="modal items-center justify-center bg-black/80" onclick="closeImageView()">
+        <img id="imageViewSrc" class="max-w-full max-h-full object-contain rounded-lg">
+    </div>
+
+    <script>
+        // Initialize data
+        let data = {
+            background: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1920',
+            slider: [
+                { id: 1, image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800', title: 'Lab Komputer Modern' },
+                { id: 2, image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800', title: 'Kegiatan Praktikum' },
+                { id: 3, image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800', title: 'Pembelajaran TIK' }
+            ],
+            profil: `<p>Laboratorium Komputer MTs Ribatul Muta'allimin merupakan fasilitas pembelajaran teknologi informasi dan komunikasi yang modern dan lengkap.</p>
+<p><strong>Visi:</strong> Menjadi laboratorium komputer terbaik yang mendukung pembelajaran berbasis teknologi.</p>
+<p><strong>Misi:</strong></p>
+<ul class="list-disc list-inside ml-4">
+<li>Menyediakan fasilitas komputer yang memadai</li>
+<li>Mendukung proses pembelajaran TIK</li>
+<li>Mengembangkan kemampuan digital siswa</li>
+</ul>`,
+            pengumuman: [],
+            labUtara: 30,
+            labSelatan: 40,
+            bookings: [],
+            galeri: [],
+            saran: [],
+            kontak: {
+                alamat: "MTs Ribatul Muta'allimin",
+                telp: "-",
+                email: "-"
+            },
+            admin: { username: 'admin', password: 'admin123' }
+        };
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('labKomputerData');
+            if (saved) {
+                data = { ...data, ...JSON.parse(saved) };
+            }
+            updateUI();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('labKomputerData', JSON.stringify(data));
+            updateUI();
+        }
+
+        // Update UI with current data
+        function updateUI() {
+            // Background
+            document.getElementById('bgContainer').style.backgroundImage = `url('${data.background}')`;
+            
+            // Stats
+            document.getElementById('totalKomputer').textContent = data.labUtara + data.labSelatan;
+            document.getElementById('labUtaraInfo').textContent = `${data.labUtara} Unit Komputer`;
+            document.getElementById('labSelatanInfo').textContent = `${data.labSelatan} Unit Komputer`;
+            document.getElementById('totalBooking').textContent = data.bookings.length;
+            document.getElementById('totalPengguna').textContent = [...new Set(data.bookings.map(b => b.nama))].length;
+            
+            // Profil
+            document.getElementById('profilContent').innerHTML = data.profil;
+            
+            // Pengumuman
+            renderPengumuman();
+            
+            // Galeri
+            renderGaleri();
+            
+            // Kontak
+            document.getElementById('kontakAlamat').textContent = data.kontak.alamat;
+            document.getElementById('kontakTelp').textContent = data.kontak.telp;
+            document.getElementById('kontakEmail').textContent = data.kontak.email;
+            
+            // Slider
+            renderSlider();
+            
+            // Admin stats
+            if (document.getElementById('adminTotalKomputer')) {
+                document.getElementById('adminTotalKomputer').textContent = data.labUtara + data.labSelatan;
+                document.getElementById('adminTotalBooking').textContent = data.bookings.length;
+                document.getElementById('adminTotalSaran').textContent = data.saran.length;
+                document.getElementById('adminTotalGaleri').textContent = data.galeri.length;
+            }
+        }
+
+        // Slider functionality
+        let currentSlide = 0;
+        
+        function renderSlider() {
+            const container = document.getElementById('sliderImages');
+            const dots = document.getElementById('sliderDots');
+            
+            if (data.slider.length === 0) {
+                container.innerHTML = '<div class="w-full h-64 md:h-96 flex-shrink-0 bg-gray-600 flex items-center justify-center text-white">Tidak ada gambar</div>';
+                dots.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = data.slider.map(s => 
+                `<div class="w-full h-64 md:h-96 flex-shrink-0 relative">
+                    <img src="${s.image}" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                        <h3 class="text-white font-bold text-xl">${s.title}</h3>
+                    </div>
+                </div>`
+            ).join('');
+            
+            dots.innerHTML = data.slider.map((_, i) => 
+                `<button onclick="goToSlide(${i})" class="w-3 h-3 rounded-full ${i === currentSlide ? 'bg-white' : 'bg-white/50'}"></button>`
+            ).join('');
+            
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % data.slider.length;
+            renderSlider();
+        }
+        
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + data.slider.length) % data.slider.length;
+            renderSlider();
+        }
+        
+        function goToSlide(index) {
+            currentSlide = index;
+            renderSlider();
+        }
+
+        // Page navigation
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`page-${page}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white/30');
+                if (btn.dataset.page === page) btn.classList.add('bg-white/30');
+            });
+            
+            if (page === 'jadwal') renderSchedule();
+        }
+
+        // Pengumuman
+        function renderPengumuman() {
+            const list = document.getElementById('pengumumanList');
+            if (data.pengumuman.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-300 py-8"><i class="fas fa-inbox text-4xl mb-4"></i><p>Belum ada pengumuman</p></div>';
+                return;
+            }
+            list.innerHTML = data.pengumuman.map(p => `
+                <div class="glass-dark rounded-xl p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-white">${p.judul}</h3>
+                        <span class="text-gray-400 text-sm">${p.tanggal}</span>
+                    </div>
+                    <p class="text-gray-300">${p.isi}</p>
+                </div>
+            `).join('');
+        }
+
+        // Galeri
+        function renderGaleri() {
+            const grid = document.getElementById('galeriGrid');
+            if (data.galeri.length === 0) {
+                grid.innerHTML = '<div class="col-span-3 text-center text-gray-300 py-8"><i class="fas fa-images text-4xl mb-4"></i><p>Belum ada foto di galeri</p></div>';
+                return;
+            }
+            grid.innerHTML = data.galeri.map(g => `
+                <div class="card-hover cursor-pointer" onclick="viewImage('${g.image}')">
+                    <div class="rounded-xl overflow-hidden">
+                        <img src="${g.image}" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4 glass-dark rounded-b-xl -mt-2">
+                        <h4 class="text-white font-semibold">${g.judul}</h4>
+                        <p class="text-gray-400 text-sm">${g.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Schedule
+        let selectedLab = 'utara';
+        let currentWeekOffset = 0;
+        const days = ['Sabtu', 'Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis'];
+        
+        function selectLab(lab) {
+            selectedLab = lab;
+            document.getElementById('btnLabUtara').className = lab === 'utara' 
+                ? 'px-6 py-3 rounded-xl gradient-bg text-white font-semibold transition'
+                : 'px-6 py-3 rounded-xl bg-white/20 text-white font-semibold transition hover:bg-white/30';
+            document.getElementById('btnLabSelatan').className = lab === 'selatan'
+                ? 'px-6 py-3 rounded-xl gradient-bg text-white font-semibold transition'
+                : 'px-6 py-3 rounded-xl bg-white/20 text-white font-semibold transition hover:bg-white/30';
+            renderSchedule();
+        }
+        
+        function changeWeek(offset) {
+            currentWeekOffset += offset;
+            renderSchedule();
+        }
+        
+        function getWeekDates() {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const saturday = new Date(today);
+            saturday.setDate(today.getDate() - (dayOfWeek === 0 ? 1 : dayOfWeek + 1) + (currentWeekOffset * 7) + 7);
+            
+            const dates = [];
+            for (let i = 0; i < 6; i++) {
+                const d = new Date(saturday);
+                d.setDate(saturday.getDate() + i);
+                dates.push(d);
+            }
+            return dates;
+        }
+        
+        function renderSchedule() {
+            const dates = getWeekDates();
+            const startDate = dates[0];
+            const endDate = dates[5];
+            
+            document.getElementById('weekLabel').textContent = 
+                `${startDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+            
+            const table = document.getElementById('scheduleTable');
+            let html = '';
+            
+            for (let jam = 1; jam <= 8; jam++) {
+                html += '<tr>';
+                html += `<td class="p-2 text-center bg-white/10 font-semibold">Jam ${jam}</td>`;
+                
+                for (let d = 0; d < 6; d++) {
+                    const dateStr = dates[d].toISOString().split('T')[0];
+                    const booking = data.bookings.find(b => 
+                        b.lab === selectedLab && b.tanggal === dateStr && b.jam === jam
+                    );
+                    
+                    if (booking) {
+                        html += `<td class="p-2 schedule-cell booked rounded-lg m-1 text-center text-sm cursor-pointer" onclick="viewBooking('${booking.id}')">
+                            <strong>${booking.kelas}</strong><br>
+                            <span class="text-xs">${booking.mapel}</span>
+                        </td>`;
+                    } else {
+                        html += `<td class="p-2 schedule-cell available rounded-lg m-1 text-center text-sm" onclick="openBooking('${dateStr}', ${jam})">
+                            <i class="fas fa-plus"></i><br>
+                            <span class="text-xs">Tersedia</span>
+                        </td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+            
+            table.innerHTML = html;
+        }
+        
+        let bookingDate, bookingJam;
+        
+        function openBooking(date, jam) {
+            bookingDate = date;
+            bookingJam = jam;
+            const labName = selectedLab === 'utara' ? 'Lab Utara' : 'Lab Selatan';
+            document.getElementById('bookingInfo').textContent = 
+                `${labName} - ${new Date(date).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' })} - Jam ke-${jam}`;
+            document.getElementById('bookingModal').classList.add('show');
+        }
+        
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.remove('show');
+            document.getElementById('bookingForm').reset();
+        }
+        
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const booking = {
+                id: Date.now().toString(),
+                lab: selectedLab,
+                tanggal: bookingDate,
+                jam: bookingJam,
+                nama: document.getElementById('bookingNama').value,
+                kelas: document.getElementById('bookingKelas').value,
+                mapel: document.getElementById('bookingMapel').value,
+                keterangan: document.getElementById('bookingKet').value,
+                createdAt: new Date().toISOString()
+            };
+            data.bookings.push(booking);
+            saveData();
+            closeBookingModal();
+            renderSchedule();
+            alert('Booking berhasil!');
+        });
+        
+        function viewBooking(id) {
+            const booking = data.bookings.find(b => b.id === id);
+            if (!booking) return;
+            
+            document.getElementById('viewBookingContent').innerHTML = `
+                <p><strong>Lab:</strong> ${booking.lab === 'utara' ? 'Lab Utara' : 'Lab Selatan'}</p>
+                <p><strong>Tanggal:</strong> ${new Date(booking.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                <p><strong>Jam:</strong> Jam ke-${booking.jam}</p>
+                <p><strong>Guru:</strong> ${booking.nama}</p>
+                <p><strong>Kelas:</strong> ${booking.kelas}</p>
+                <p><strong>Mata Pelajaran:</strong> ${booking.mapel}</p>
+                ${booking.keterangan ? `<p><strong>Keterangan:</strong> ${booking.keterangan}</p>` : ''}
+            `;
+            document.getElementById('viewBookingModal').classList.add('show');
+        }
+        
+        function closeViewBookingModal() {
+            document.getElementById('viewBookingModal').classList.remove('show');
+        }
+
+        // Saran Form
+        document.getElementById('saranForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const saran = {
+                id: Date.now().toString(),
+                nama: document.getElementById('saranNama').value,
+                email: document.getElementById('saranEmail').value,
+                isi: document.getElementById('saranIsi').value,
+                createdAt: new Date().toISOString()
+            };
+            data.saran.push(saran);
+            saveData();
+            this.reset();
+            alert('Terima kasih atas saran Anda!');
+        });
+
+        // Admin Functions
+        function showAdminLogin() {
+            document.getElementById('adminLoginModal').classList.add('show');
+        }
+        
+        function closeAdminLogin() {
+            document.getElementById('adminLoginModal').classList.remove('show');
+        }
+        
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === data.admin.username && password === data.admin.password) {
+                closeAdminLogin();
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadAdminData();
+            } else {
+                alert('Username atau password salah!');
+            }
+        });
+        
+        function logoutAdmin() {
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('adminLoginForm').reset();
+        }
+        
+        function showAdminPage(page) {
+            document.querySelectorAll('.admin-page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`admin-${page}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.sidebar-link').classList.add('active');
+            
+            if (page === 'booking') renderAdminBooking();
+            if (page === 'saran') renderAdminSaran();
+            if (page === 'galeri') renderAdminGaleri();
+            if (page === 'pengumuman') renderAdminPengumuman();
+            if (page === 'slider') renderAdminSlider();
+        }
+        
+        function loadAdminData() {
+            document.getElementById('adminProfilContent').value = data.profil;
+            document.getElementById('labUtaraCount').value = data.labUtara;
+            document.getElementById('labSelatanCount').value = data.labSelatan;
+            document.getElementById('kontakAlamatInput').value = data.kontak.alamat;
+            document.getElementById('kontakTelpInput').value = data.kontak.telp;
+            document.getElementById('kontakEmailInput').value = data.kontak.email;
+            updateUI();
+        }
+
+        // Admin - Background
+        let tempBackground = null;
+        document.getElementById('bgUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempBackground = e.target.result;
+                    document.getElementById('bgPreview').innerHTML = `<img src="${tempBackground}" class="w-full h-64 object-cover">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        function saveBackground() {
+            if (tempBackground) {
+                data.background = tempBackground;
+                saveData();
+                alert('Background berhasil disimpan!');
+            }
+        }
+
+        // Admin - Slider
+        let tempSliderImage = null;
+        document.getElementById('sliderUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempSliderImage = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        function addSliderImage() {
+            if (tempSliderImage && document.getElementById('sliderTitle').value) {
+                data.slider.push({
+                    id: Date.now(),
+                    image: tempSliderImage,
+                    title: document.getElementById('sliderTitle').value
+                });
+                saveData();
+                document.getElementById('sliderUpload').value = '';
+                document.getElementById('sliderTitle').value = '';
+                tempSliderImage = null;
+                renderAdminSlider();
+                alert('Gambar slider berhasil ditambahkan!');
+            }
+        }
+        
+        function renderAdminSlider() {
+            document.getElementById('sliderList').innerHTML = data.slider.map(s => `
+                <div class="bg-gray-700 rounded-xl overflow-hidden">
+                    <img src="${s.image}" class="w-full h-32 object-cover">
+                    <div class="p-3">
+                        <p class="text-white font-semibold truncate">${s.title}</p>
+                        <button onclick="deleteSlider(${s.id})" class="mt-2 text-red-400 text-sm hover:text-red-300">
+                            <i class="fas fa-trash mr-1"></i>Hapus
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function deleteSlider(id) {
+            if (confirm('Hapus gambar ini?')) {
+                data.slider = data.slider.filter(s => s.id !== id);
+                saveData();
+                renderAdminSlider();
+            }
+        }
+
+        // Admin - Profil
+        function saveProfil() {
+            data.profil = document.getElementById('adminProfilContent').value;
+            saveData();
+            alert('Profil berhasil disimpan!');
+        }
+
+        // Admin - Pengumuman
+        function addPengumuman() {
+            const judul = document.getElementById('pengumumanJudul').value;
+            const tanggal = document.getElementById('pengumumanTanggal').value;
+            const isi = document.getElementById('pengumumanIsi').value;
+            
+            if (judul && tanggal && isi) {
+                data.pengumuman.unshift({
+                    id: Date.now().toString(),
+                    judul, tanggal, isi
+                });
+                saveData();
+                document.getElementById('pengumumanJudul').value = '';
+                document.getElementById('pengumumanTanggal').value = '';
+                document.getElementById('pengumumanIsi').value = '';
+                renderAdminPengumuman();
+                alert('Pengumuman berhasil ditambahkan!');
+            }
+        }
+        
+        function renderAdminPengumuman() {
+            document.getElementById('adminPengumumanList').innerHTML = data.pengumuman.map(p => `
+                <div class="bg-gray-700 rounded-xl p-4 flex justify-between items-start">
+                    <div>
+                        <h4 class="text-white font-semibold">${p.judul}</h4>
+                        <p class="text-gray-400 text-sm">${p.tanggal}</p>
+                        <p class="text-gray-300 mt-2">${p.isi}</p>
+                    </div>
+                    <button onclick="deletePengumuman('${p.id}')" class="text-red-400 hover:text-red-300">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function deletePengumuman(id) {
+            if (confirm('Hapus pengumuman ini?')) {
+                data.pengumuman = data.pengumuman.filter(p => p.id !== id);
+                saveData();
+                renderAdminPengumuman();
+            }
+        }
+
+        // Admin - Lab Settings
+        function saveLabUtara() {
+            data.labUtara = parseInt(document.getElementById('labUtaraCount').value);
+            saveData();
+            alert('Jumlah komputer Lab Utara berhasil disimpan!');
+        }
+        
+        function saveLabSelatan() {
+            data.labSelatan = parseInt(document.getElementById('labSelatanCount').value);
+            saveData();
+            alert('Jumlah komputer Lab Selatan berhasil disimpan!');
+        }
+
+        // Admin - Booking
+        function renderAdminBooking() {
+            const sorted = [...data.bookings].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+            document.getElementById('adminBookingList').innerHTML = sorted.map(b => `
+                <tr class="border-b border-gray-700">
+                    <td class="p-4">${new Date(b.tanggal).toLocaleDateString('id-ID')}</td>
+                    <td class="p-4">${b.lab === 'utara' ? 'Lab Utara' : 'Lab Selatan'}</td>
+                    <td class="p-4">Jam ${b.jam}</td>
+                    <td class="p-4">${b.nama}</td>
+                    <td class="p-4">${b.kelas}</td>
+                    <td class="p-4">${b.mapel}</td>
+                    <td class="p-4">
+                        <button onclick="deleteBooking('${b.id}')" class="text-red-400 hover:text-red-300">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function deleteBooking(id) {
+            if (confirm('Hapus booking ini?')) {
+                data.bookings = data.bookings.filter(b => b.id !== id);
+                saveData();
+                renderAdminBooking();
+            }
+        }
+        
+        function downloadBookingData() {
+            let csv = 'Tanggal,Lab,Jam,Nama,Kelas,Mata Pelajaran,Keterangan\n';
+            data.bookings.forEach(b => {
+                csv += `${b.tanggal},${b.lab === 'utara' ? 'Lab Utara' : 'Lab Selatan'},Jam ${b.jam},${b.nama},${b.kelas},${b.mapel},${b.keterangan || '-'}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data_booking_lab.csv';
+            a.click();
+        }
+
+        // Admin - Galeri
+        let tempGaleriImage = null;
+        document.getElementById('galeriUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempGaleriImage = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        function addGaleri() {
+            if (tempGaleriImage && document.getElementById('galeriJudul').value) {
+                data.galeri.push({
+                    id: Date.now().toString(),
+                    image: tempGaleriImage,
+                    judul: document.getElementById('galeriJudul').value,
+                    desc: document.getElementById('galeriDesc').value
+                });
+                saveData();
+                document.getElementById('galeriUpload').value = '';
+                document.getElementById('galeriJudul').value = '';
+                document.getElementById('galeriDesc').value = '';
+                tempGaleriImage = null;
+                renderAdminGaleri();
+                alert('Foto berhasil ditambahkan!');
+            }
+        }
+        
+        function renderAdminGaleri() {
+            document.getElementById('adminGaleriList').innerHTML = data.galeri.map(g => `
+                <div class="bg-gray-700 rounded-xl overflow-hidden">
+                    <img src="${g.image}" class="w-full h-32 object-cover">
+                    <div class="p-3">
+                        <p class="text-white font-semibold truncate">${g.judul}</p>
+                        <button onclick="deleteGaleri('${g.id}')" class="mt-2 text-red-400 text-sm hover:text-red-300">
+                            <i class="fas fa-trash mr-1"></i>Hapus
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function deleteGaleri(id) {
+            if (confirm('Hapus foto ini?')) {
+                data.galeri = data.galeri.filter(g => g.id !== id);
+                saveData();
+                renderAdminGaleri();
+            }
+        }
+
+        // Admin - Saran
+        function renderAdminSaran() {
+            const sorted = [...data.saran].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            document.getElementById('adminSaranList').innerHTML = sorted.length === 0 
+                ? '<div class="text-center text-gray-400 py-8">Belum ada saran masuk</div>'
+                : sorted.map(s => `
+                    <div class="bg-gray-700 rounded-xl p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="text-white font-semibold">${s.nama}</h4>
+                                <p class="text-gray-400 text-sm">${s.email}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-gray-500 text-xs">${new Date(s.createdAt).toLocaleDateString('id-ID')}</span>
+                                <button onclick="deleteSaran('${s.id}')" class="text-red-400 hover:text-red-300">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-gray-300">${s.isi}</p>
+                    </div>
+                `).join('');
+        }
+        
+        function deleteSaran(id) {
+            if (confirm('Hapus saran ini?')) {
+                data.saran = data.saran.filter(s => s.id !== id);
+                saveData();
+                renderAdminSaran();
+            }
+        }
+
+        // Admin - Kontak
+        function saveKontak() {
+            data.kontak = {
+                alamat: document.getElementById('kontakAlamatInput').value,
+                telp: document.getElementById('kontakTelpInput').value,
+                email: document.getElementById('kontakEmailInput').value
+            };
+            saveData();
+            alert('Kontak berhasil disimpan!');
+        }
+
+        // Image View
+        function viewImage(src) {
+            document.getElementById('imageViewSrc').src = src;
+            document.getElementById('imageViewModal').classList.add('show');
+        }
+        
+        function closeImageView() {
+            document.getElementById('imageViewModal').classList.remove('show');
+        }
+
+        // Auto-slide
+        setInterval(nextSlide, 5000);
+
+        // Initialize
+        loadData();
+        showPage('dashboard');
+    </script>
+</body>
+</html>
